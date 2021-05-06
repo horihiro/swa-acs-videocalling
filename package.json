@@ -1,0 +1,30 @@
+{
+  "name": "swa-acs-videocalling",
+  "version": "1.0.0",
+  "description": "This repo is used as a starter for a _very basic_ HTML web application using no front-end frameworks.",
+  "main": "client.js",
+  "dependencies": {
+    "@azure/communication-calling": "^1.0.0",
+    "@azure/communication-common": "^1.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "scripts": {
+    "build": "webpack-cli --entry ./client.js  --output dist/bundle.js ",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/horihiro/swa-acs-videocalling.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/horihiro/swa-acs-videocalling/issues"
+  },
+  "homepage": "https://github.com/horihiro/swa-acs-videocalling#readme"
+}
