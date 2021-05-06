@@ -8,6 +8,7 @@ const callButton = document.getElementById("call-button");
 const hangUpButton = document.getElementById("hang-up-button");
 const stopVideoButton = document.getElementById("stop-Video");
 const startVideoButton = document.getElementById("start-Video");
+const callerId = document.getElementById('caller-id');
 
 let placeCallOptions;
 let deviceManager;
@@ -23,6 +24,7 @@ async function init() {
 
   deviceManager = await callClient.getDeviceManager();
   callButton.disabled = false;
+  callerId.innerText = `Your Id is: ${credential.communicationUserId}`;
 
   callAgent.on('incomingCall', async e => {
     const videoDevices = await deviceManager.getCameras();
