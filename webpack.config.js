@@ -10,9 +10,7 @@ module.exports = {
   },
   plugins: [
     // ↓ 追加
-    new CopyWebpackPlugin({
-      patterns: [{from: 'index.html' }]
-    })
+    new CopyWebpackPlugin([{from: 'index.html' }])
   ],
 
 }
