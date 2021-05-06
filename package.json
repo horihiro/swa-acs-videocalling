@@ -8,12 +8,13 @@
     "@azure/communication-common": "^1.0.0"
   },
   "devDependencies": {
-    "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "copy-webpack-plugin": "^8.1.1",
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.6.0",
+    "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
-    "build": "webpack-cli --entry ./client.js  --output dist/bundle.js ",
+    "build": "webpack-cli",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
