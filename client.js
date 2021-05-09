@@ -8,6 +8,7 @@ const callButton = document.getElementById("call-button");
 const hangUpButton = document.getElementById("hang-up-button");
 const stopVideoButton = document.getElementById("stop-Video");
 const startVideoButton = document.getElementById("start-Video");
+const selectCameraDialog = document.getElementById("select-Camera");
 const callerId = document.getElementById('caller-id');
 
 let placeCallOptions;
@@ -16,30 +17,57 @@ let localVideoStream;
 let rendererLocal;
 let rendererRemote;
 
+async function openSelectCameraDialog(videoDevices, onOkHandler) {
+  // if (videoDevices && videoDevices.length === 1) {
+  //   setImmediate(() => {
+  //     onOkHandler(videoDevices[0]);
+  //   });
+  //   return;
+  // }
+
+  const selectElement = selectCameraDialog.querySelector("select");
+  while (selectElement.childNodes && selectElement.childNodes.length) {
+    selectElement.removeChild(selectElement.childNodes[0]);
+  }
+  videoDevices.forEach((videoDevice) => {
+    const cameraOption = document.createElement("option");
+    cameraOption.innerText = videoDevice.deviceType;
+    selectElement.appendChild(cameraOption);
+  });
+  const closeHandler = (e) => {
+    if (selectCameraDialog.returnValue === "Ok") onOkHandler(videoDevices[selectElement.selectedIndex]);
+    selectCameraDialog.removeEventListener("close", closeHandler);
+  };
+  selectCameraDialog.addEventListener("close", closeHandler);
+  selectCameraDialog.showModal();
+}
+
 async function init() {
   const callClient = new CallClient();
-  const credential = await (await fetch('/api/getToken')).json();
-  const tokenCredential = new AzureCommunicationTokenCredential(credential.token);
-  callAgent = await callClient.createCallAgent(tokenCredential, { displayName: 'optional ACS user name' });
 
   deviceManager = await callClient.getDeviceManager();
+  // const credential = await (await fetch('/api/getToken')).json();
+  // const tokenCredential = new AzureCommunicationTokenCredential(credential.token);
+  // callAgent = await callClient.createCallAgent(tokenCredential, { displayName: 'optional ACS user name' });
+  // callerId.innerText = `Your Id is: ${credential.communicationUserId}`;
   callButton.disabled = false;
-  callerId.innerText = `Your Id is: ${credential.communicationUserId}`;
 
   callAgent.on('incomingCall', async e => {
     const videoDevices = await deviceManager.getCameras();
-    const videoDeviceInfo = videoDevices[0];
-    localVideoStream = new LocalVideoStream(videoDeviceInfo);
-    localVideoView();
+    // const videoDeviceInfo = videoDevices[0];
+    openSelectCameraDialog(videoDevices, async (videoDeviceInfo) => {
+      localVideoStream = new LocalVideoStream(videoDeviceInfo);
+      localVideoView();
 
-    stopVideoButton.disabled = false;
-    callButton.disabled = true;
-    hangUpButton.disabled = false;
+      stopVideoButton.disabled = false;
+      callButton.disabled = true;
+      hangUpButton.disabled = false;
 
-    const addedCall = await e.incomingCall.accept({ videoOptions: { localVideoStreams: [localVideoStream] } });
-    call = addedCall;
+      const addedCall = await e.incomingCall.accept({ videoOptions: { localVideoStreams: [localVideoStream] } });
+      call = addedCall;
 
-    subscribeToRemoteParticipantInCall(addedCall);
+      subscribeToRemoteParticipantInCall(addedCall);
+    });
   });
 
   callAgent.on('callsUpdated', e => {
@@ -59,24 +87,27 @@ init();
 
 callButton.addEventListener("click", async () => {
   const videoDevices = await deviceManager.getCameras();
-  const videoDeviceInfo = videoDevices[0];
-  localVideoStream = new LocalVideoStream(videoDeviceInfo);
-  placeCallOptions = { videoOptions: { localVideoStreams: [localVideoStream] } };
+  // const videoDeviceInfo = videoDevices[0];
+  openSelectCameraDialog(videoDevices, async (videoDeviceInfo) => {
 
-  localVideoView();
-  stopVideoButton.disabled = false;
-  startVideoButton.disabled = true;
+    localVideoStream = new LocalVideoStream(videoDeviceInfo);
+    placeCallOptions = { videoOptions: { localVideoStreams: [localVideoStream] } };
 
-  const userToCall = calleeInput.value;
-  call = callAgent.startCall(
-    [{ communicationUserId: userToCall }],
-    placeCallOptions
-  );
+    localVideoView();
+    stopVideoButton.disabled = false;
+    startVideoButton.disabled = true;
 
-  subscribeToRemoteParticipantInCall(call);
+    const userToCall = calleeInput.value;
+    call = callAgent.startCall(
+      [{ communicationUserId: userToCall }],
+      placeCallOptions
+    );
 
-  hangUpButton.disabled = false;
-  callButton.disabled = true;
+    subscribeToRemoteParticipantInCall(call);
+
+    hangUpButton.disabled = false;
+    callButton.disabled = true;
+  })
 });
 
 async function localVideoView() {
