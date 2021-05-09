@@ -46,7 +46,7 @@ async function init() {
   const callClient = new CallClient();
   console.log(await navigator.mediaDevices.enumerateDevices())
   deviceManager = await callClient.getDeviceManager();
-  const credential = {}; // await (await fetch('/api/getToken')).json();
+  const credential = await (await fetch('/api/getToken')).json();
   const tokenCredential = new AzureCommunicationTokenCredential(credential.token);
   callAgent = await callClient.createCallAgent(tokenCredential, { displayName: 'optional ACS user name' });
   callerId.innerText = `Your Id is: ${credential.communicationUserId}`;
