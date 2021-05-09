@@ -18,12 +18,12 @@ let rendererLocal;
 let rendererRemote;
 
 async function openSelectCameraDialog(videoDevices, onOkHandler) {
-  // if (videoDevices && videoDevices.length === 1) {
-  //   setImmediate(() => {
-  //     onOkHandler(videoDevices[0]);
-  //   });
-  //   return;
-  // }
+  if (videoDevices && videoDevices.length === 1) {
+    setImmediate(() => {
+      onOkHandler(videoDevices[0]);
+    });
+    return;
+  }
 
   const selectElement = selectCameraDialog.querySelector("select");
   while (selectElement.childNodes && selectElement.childNodes.length) {
@@ -31,7 +31,7 @@ async function openSelectCameraDialog(videoDevices, onOkHandler) {
   }
   videoDevices.forEach((videoDevice) => {
     const cameraOption = document.createElement("option");
-    cameraOption.innerText = videoDevice.deviceType;
+    cameraOption.innerText = videoDevice.name;
     selectElement.appendChild(cameraOption);
   });
   const closeHandler = (e) => {
@@ -44,9 +44,9 @@ async function openSelectCameraDialog(videoDevices, onOkHandler) {
 
 async function init() {
   const callClient = new CallClient();
-
+  console.log(await navigator.mediaDevices.enumerateDevices())
   deviceManager = await callClient.getDeviceManager();
-  const credential = await (await fetch('/api/getToken')).json();
+  const credential = {}; // await (await fetch('/api/getToken')).json();
   const tokenCredential = new AzureCommunicationTokenCredential(credential.token);
   callAgent = await callClient.createCallAgent(tokenCredential, { displayName: 'optional ACS user name' });
   callerId.innerText = `Your Id is: ${credential.communicationUserId}`;
