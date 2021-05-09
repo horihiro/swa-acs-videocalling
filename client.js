@@ -46,10 +46,10 @@ async function init() {
   const callClient = new CallClient();
 
   deviceManager = await callClient.getDeviceManager();
-  // const credential = await (await fetch('/api/getToken')).json();
-  // const tokenCredential = new AzureCommunicationTokenCredential(credential.token);
-  // callAgent = await callClient.createCallAgent(tokenCredential, { displayName: 'optional ACS user name' });
-  // callerId.innerText = `Your Id is: ${credential.communicationUserId}`;
+  const credential = await (await fetch('/api/getToken')).json();
+  const tokenCredential = new AzureCommunicationTokenCredential(credential.token);
+  callAgent = await callClient.createCallAgent(tokenCredential, { displayName: 'optional ACS user name' });
+  callerId.innerText = `Your Id is: ${credential.communicationUserId}`;
   callButton.disabled = false;
 
   callAgent.on('incomingCall', async e => {
